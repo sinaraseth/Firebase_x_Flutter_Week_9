@@ -11,6 +11,7 @@ class FirebaselocationRepository extends LocationRepository {
       'https://w8-firebase-section-default-rtdb.asia-southeast1.firebasedatabase.app/';
   static const String locationCollection = "location";
   static const String allLocationUlr = '$baseUrl/$locationCollection.json';
+  Uri uri = Uri.parse(allLocationUlr);
 
   @override
   Future<Location> addLocation({
@@ -18,7 +19,6 @@ class FirebaselocationRepository extends LocationRepository {
     required String country,
     required int province,
   }) async {
-    Uri uri = Uri.parse(allLocationUlr);
 
     // Create a new data
     final newLocationData = {'capital_city': capital_city, 'country': country, 'province': province};
@@ -42,7 +42,6 @@ class FirebaselocationRepository extends LocationRepository {
 
   @override
   Future<List<Location>> getLocation() async {
-    Uri uri = Uri.parse(allLocationUlr);
     final http.Response response = await http.get(uri);
 
     // Handle errors
@@ -59,4 +58,43 @@ class FirebaselocationRepository extends LocationRepository {
         .map((entry) => LocationDto.fromJson(entry.key, entry.value))
         .toList();
   }
+
+  @override
+   Future<http.Response> deleteLocation({required String id}) async {
+     Uri uriDelete = Uri.parse('$baseUrl/$locationCollection/$id.json');
+     final http.Response response = await http.delete(
+       uriDelete,
+       headers: {'Content-Type': 'application/json'},
+     );
+ 
+     if (response.statusCode != HttpStatus.ok) {
+       throw Exception('Failed to delete student');
+     }
+ 
+     return response;
+   }
+ 
+   @override
+   Future<Location> updateLocation({
+     required String id,
+     required String capital_city,
+     required String country,
+     required int province,
+   }) async {
+     final updateLocation = {'capital_city': capital_city, 'country': country, 'province': province};
+     Uri uriUpdate = Uri.parse('$baseUrl/$locationCollection/$id.json');
+     final http.Response response = await http.put(
+       uriUpdate,
+       headers: {'Content-Type': 'application/json'},
+       body: json.encode(updateLocation),
+     );
+ 
+     // Handle errors
+     if (response.statusCode != HttpStatus.ok) {
+       throw Exception('Failed to add user');
+     }
+ 
+     // Return created user
+     return Location(id: id, capital_city: capital_city, country: country, province: province);
+   }
 }

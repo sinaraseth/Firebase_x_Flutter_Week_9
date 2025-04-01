@@ -1,3 +1,5 @@
+enum Mode { update, add }
+
 class Location {
   final String id;
   final String capital_city;

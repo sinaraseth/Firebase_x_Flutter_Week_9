@@ -38,9 +38,20 @@ class LocationProvider extends ChangeNotifier {
  
    void addLocation(String capital_city, String country, int province) async {
      // 1- Call repo to add
-     _repository.addLocation(capital_city: capital_city, country: country, province: province);
+    await _repository.addLocation(capital_city: capital_city, country: country, province: province);
  
      // 2- Call repo to fetch
+     fetchUsers();
+   }
+
+
+   void updateLocation(String id, String capital_city, String country, int province) async {
+     await _repository.updateLocation(id: id, capital_city: capital_city, country: country, province: province);
+     fetchUsers();
+   }
+ 
+   void deleteLocation(String id) async {
+     await _repository.deleteLocation(id: id);
      fetchUsers();
    }
 }
